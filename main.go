@@ -17,7 +17,6 @@ func main() {
 	}
 	cfg = c
 
-
 	var wg sync.WaitGroup
 	wg.Add(2)
 

@@ -3,13 +3,14 @@ package config
 import (
 	"os"
 	"time"
+
 	"gopkg.in/yaml.v3"
 )
 
 type Config struct {
 	Prometheus string
 	Postgres   string
-	Queries	   map[string]Query
+	Queries    map[string]Query
 }
 
 type Column struct {
@@ -25,7 +26,7 @@ type Range struct {
 
 type Query struct {
 	Expr    string
-	Range	Range
+	Range   Range
 	Table   string
 	Columns []Column
 }

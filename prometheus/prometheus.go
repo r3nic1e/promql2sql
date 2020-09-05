@@ -43,8 +43,8 @@ func runQuery(client v1.API, query config.Query, result chan metrics.Sample) err
 	if !query.Range.Start.IsZero() && !query.Range.End.IsZero() && query.Range.Step.Seconds() != 0 {
 		r := v1.Range{
 			Start: query.Range.Start,
-			End: query.Range.End,
-			Step: query.Range.Step,
+			End:   query.Range.End,
+			Step:  query.Range.Step,
 		}
 		res, _, err = client.QueryRange(ctx, query.Expr, r)
 	} else {
