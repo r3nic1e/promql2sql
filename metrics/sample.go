@@ -23,8 +23,8 @@ func metricToMap(m model.Metric) map[string]string {
 func FromPromSample(s *model.Sample) Sample {
 	return Sample{
 		Metric: metricToMap(s.Metric),
-		Value: float64(s.Value),
-		Time: s.Timestamp.Time(),
+		Value:  float64(s.Value),
+		Time:   s.Timestamp.Time(),
 	}
 }
 
@@ -36,8 +36,8 @@ func FromPromSampleStream(ss *model.SampleStream) []Sample {
 	for i, v := range ss.Values {
 		result[i] = Sample{
 			Metric: metric,
-			Value: float64(v.Value),
-			Time: v.Timestamp.Time(),
+			Value:  float64(v.Value),
+			Time:   v.Timestamp.Time(),
 		}
 	}
 
