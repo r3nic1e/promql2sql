@@ -6,24 +6,11 @@ import (
 	"sync"
 	"time"
 
-	api "github.com/prometheus/client_golang/api"
 	v1 "github.com/prometheus/client_golang/api/prometheus/v1"
 	"github.com/prometheus/common/model"
 	"github.com/r3nic1e/promql2sql/config"
 	"github.com/r3nic1e/promql2sql/metrics"
 )
-
-func GetClient(cfg config.Config) (v1.API, error) {
-	client, err := api.NewClient(api.Config{
-		Address: cfg.Prometheus,
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	v1api := v1.NewAPI(client)
-	return v1api, nil
-}
 
 func RunQueries(cfg config.Config, result map[string]chan metrics.Sample) error {
 	client, err := GetClient(cfg)
