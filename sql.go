@@ -13,7 +13,7 @@ import (
 )
 
 func getClient(cfg config.Config) (*sql.DB, error) {
-	db, err := sql.Open("postgres", cfg.SQL)
+	db, err := sql.Open("postgres", cfg.Postgres)
 	if err != nil {
 		return nil, err
 	}

@@ -8,7 +8,7 @@ import (
 
 type Config struct {
 	Prometheus string
-	SQL	   string
+	Postgres   string
 	Queries	   map[string]Query
 }
 
