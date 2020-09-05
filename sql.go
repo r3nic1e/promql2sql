@@ -9,7 +9,6 @@ import (
 	"github.com/lib/pq"
 	"github.com/r3nic1e/promql2sql/config"
 	"github.com/r3nic1e/promql2sql/metrics"
-	"github.com/davecgh/go-spew/spew"
 )
 
 func getClient(cfg config.Config) (*sql.DB, error) {
@@ -43,7 +42,6 @@ func prepareData(columns []config.Column, sample metrics.Sample) []interface{} {
 
 		result[i] = data
 	}
-	spew.Dump(result)
 	return result
 }
 
