@@ -8,7 +8,7 @@ import (
 
 	"github.com/lib/pq"
 	"github.com/r3nic1e/promql2sql/config"
-	"github.com/prometheus/common/model"
+	"github.com/r3nic1e/promql2sql/metrics"
 	"github.com/davecgh/go-spew/spew"
 )
 
@@ -25,7 +25,7 @@ func getClient(cfg config.Config) (*sql.DB, error) {
 	return db, nil
 }
 
-func prepareData(columns []config.Column, sample *model.Sample) []interface{} {
+func prepareData(columns []config.Column, sample metrics.Sample) []interface{} {
 	result := make([]interface{}, len(columns))
 
 	for i := range columns {
@@ -33,11 +33,11 @@ func prepareData(columns []config.Column, sample *model.Sample) []interface{} {
 
 		switch columns[i].Label {
 		case "$time":
-			data = sample.Timestamp.Time()
+			data = sample.Time
 		case "$value":
 			data = sample.Value
 		default:
-			label := model.LabelName(columns[i].Label)
+			label := columns[i].Label
 			data = sample.Metric[label]
 		}
 
@@ -47,7 +47,7 @@ func prepareData(columns []config.Column, sample *model.Sample) []interface{} {
 	return result
 }
 
-func insertData(db *sql.DB, query config.Query, results <-chan *model.Sample) error {
+func insertData(db *sql.DB, query config.Query, results <-chan metrics.Sample) error {
 	txn, err := db.Begin()
 	if err != nil {
 		return err
@@ -92,7 +92,7 @@ func insertData(db *sql.DB, query config.Query, results <-chan *model.Sample) er
 	return err
 }
 
-func InsertData(cfg config.Config, results map[string]chan *model.Sample) error {
+func InsertData(cfg config.Config, results map[string]chan metrics.Sample) error {
 	db, err := getClient(cfg)
 	if err != nil {
 		return err
@@ -103,7 +103,7 @@ func InsertData(cfg config.Config, results map[string]chan *model.Sample) error 
 
 	for name := range cfg.Queries {
 		res := results[name]
-		go func(db *sql.DB, name string, query config.Query, res <-chan *model.Sample, wg *sync.WaitGroup) {
+		go func(db *sql.DB, name string, query config.Query, res <-chan metrics.Sample, wg *sync.WaitGroup) {
 			defer wg.Done()
 			err := insertData(db, query, res)
 			if err != nil {

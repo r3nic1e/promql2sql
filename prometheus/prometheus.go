@@ -10,6 +10,7 @@ import (
 	v1 "github.com/prometheus/client_golang/api/prometheus/v1"
 	"github.com/prometheus/common/model"
 	"github.com/r3nic1e/promql2sql/config"
+	"github.com/r3nic1e/promql2sql/metrics"
 )
 
 func GetClient(cfg config.Config) (v1.API, error) {
@@ -24,7 +25,7 @@ func GetClient(cfg config.Config) (v1.API, error) {
 	return v1api, nil
 }
 
-func RunQueries(cfg config.Config, result map[string]chan *model.Sample) error {
+func RunQueries(cfg config.Config, result map[string]chan metrics.Sample) error {
 	client, err := GetClient(cfg)
 	if err != nil {
 		return err
@@ -47,7 +48,7 @@ func RunQueries(cfg config.Config, result map[string]chan *model.Sample) error {
 	return nil
 }
 
-func runQuery(client v1.API, query config.Query, result chan *model.Sample) error {
+func runQuery(client v1.API, query config.Query, result chan metrics.Sample) error {
 	ctx := context.Background()
 	var res model.Value
 	var err error
@@ -70,17 +71,12 @@ func runQuery(client v1.API, query config.Query, result chan *model.Sample) erro
 	switch res.Type() {
 	case model.ValVector:
 		for _, sample := range res.(model.Vector) {
-			result <- sample
+			result <- metrics.FromPromSample(sample)
 		}
 	case model.ValMatrix:
 		for _, sampleStream := range res.(model.Matrix) {
-			for _, v := range sampleStream.Values {
-				sample := &model.Sample{
-					Metric: sampleStream.Metric,
-					Value: v.Value,
-					Timestamp: v.Timestamp,
-				}
-				result <- sample
+			for _, v := range metrics.FromPromSampleStream(sampleStream) {
+				result <- v
 			}
 		}
 	default:
