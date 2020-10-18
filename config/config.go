@@ -1,46 +1,29 @@
 package config
 
 import (
-	"os"
 	"time"
-
-	"gopkg.in/yaml.v3"
 )
 
 type Config struct {
-	Prometheus string
-	Postgres   string
-	Queries    map[string]Query
-	Range      Range
+	Prometheus string           `yaml:"prometheus"`
+	Postgres   string           `yaml:"postgres"`
+	Queries    map[string]Query `yaml:"queries"`
+	Range      Range            `yaml:"range"`
 }
 
 type Column struct {
-	Column string
-	Label  string
+	Column string `yaml:"column"`
+	Label  string `yaml:"label"`
 }
 
 type Range struct {
-	Start time.Time
-	End   time.Time
-	Step  time.Duration
+	Start time.Time     `yaml:"start"`
+	End   time.Time     `yaml:"end"`
+	Step  time.Duration `yaml:"step"`
 }
 
 type Query struct {
-	Expr    string
-	Table   string
-	Columns []Column
-}
-
-func ReadConfig(path string) (Config, error) {
-	var config Config
-
-	f, err := os.Open(path)
-	if err != nil {
-		return config, err
-	}
-	defer f.Close()
-
-	decoder := yaml.NewDecoder(f)
-	err = decoder.Decode(&config)
-	return config, err
+	Expr    string   `yaml:"expr"`
+	Table   string   `yaml:"table"`
+	Columns []Column `yaml:"columns"`
 }
