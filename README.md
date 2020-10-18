@@ -7,14 +7,14 @@ This is oneshot program to export defined queries (range queries are also suppor
 ```yaml
 prometheus: http://localhost:9090
 postgres: postgres://postgres:@localhost:5432/postgres?sslmode=disable
+range: # optional prometheus query range
+  start: 2020-09-01
+  end: 2020-09-10
+  step: 24h
 queries:
   up:
     expr: up # prometheus query
     table: prometheus_up # SQL table (postgres schemas are also supported)
-    range: # optional prometheus query range
-      start: 2020-09-01
-      end: 2020-09-10
-      step: 24h
     columns:
       - column: job # SQL column
         label: job # Metric label

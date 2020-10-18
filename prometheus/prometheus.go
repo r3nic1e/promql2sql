@@ -22,29 +22,29 @@ func RunQueries(cfg config.Config, result map[string]chan metrics.Sample) error 
 	wg.Add(len(cfg.Queries))
 
 	for name, q := range cfg.Queries {
-		go func(name string, q config.Query) {
+		go func(name string, q config.Query, r config.Range) {
 			defer wg.Done()
-			err := runQuery(client, q, result[name])
+			err := runQuery(client, q, r, result[name])
 			if err != nil {
 				log.Printf("Failed to run query %s: %s", name, err.Error())
 				return
 			}
-		}(name, q)
+		}(name, q, cfg.Range)
 	}
 
 	return nil
 }
 
-func runQuery(client v1.API, query config.Query, result chan metrics.Sample) error {
+func runQuery(client v1.API, query config.Query, rng config.Range, result chan metrics.Sample) error {
 	ctx := context.Background()
 	var res model.Value
 	var err error
 
-	if !query.Range.Start.IsZero() && !query.Range.End.IsZero() && query.Range.Step.Seconds() != 0 {
+	if !rng.Start.IsZero() && !rng.End.IsZero() && rng.Step.Seconds() != 0 {
 		r := v1.Range{
-			Start: query.Range.Start,
-			End:   query.Range.End,
-			Step:  query.Range.Step,
+			Start: rng.Start,
+			End:   rng.End,
+			Step:  rng.Step,
 		}
 		res, _, err = client.QueryRange(ctx, query.Expr, r)
 	} else {

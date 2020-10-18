@@ -11,6 +11,7 @@ type Config struct {
 	Prometheus string
 	Postgres   string
 	Queries    map[string]Query
+	Range      Range
 }
 
 type Column struct {
@@ -26,7 +27,6 @@ type Range struct {
 
 type Query struct {
 	Expr    string
-	Range   Range
 	Table   string
 	Columns []Column
 }
